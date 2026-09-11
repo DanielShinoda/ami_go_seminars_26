@@ -1,11 +1,8 @@
 # Задачи семинара 2
 
-Правила решения и сдачи — [`docs/how-to-solve.md`](../../docs/how-to-solve.md).
-
-```bash
-go test ./seminar-02-basics/tasks/...
-go test -v ./seminar-02-basics/tasks/task02-reverse
-```
+Правите только `solution.go`, `solution_test.go` не трогаете. Прогнать
+задачи семинара — `make test-02`. Подробно про цикл работы, команды и сдачу —
+[`docs/how-to-solve.md`](../../docs/how-to-solve.md).
 
 | # | Задача | Что тренируем |
 |---|---|---|

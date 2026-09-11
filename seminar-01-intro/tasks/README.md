@@ -1,12 +1,8 @@
 # Задачи семинара 1
 
-Правила решения и сдачи — [`docs/how-to-solve.md`](../../docs/how-to-solve.md).
-Коротко: правите только `solution.go`, `solution_test.go` не трогаете.
-
-```bash
-go test ./seminar-01-intro/tasks/...          # все задачи семинара
-go test -v ./seminar-01-intro/tasks/task01-greet   # одна задача подробно
-```
+Правите только `solution.go`, `solution_test.go` не трогаете. Прогнать
+задачи семинара — `make test-01`. Подробно про цикл работы, команды и сдачу —
+[`docs/how-to-solve.md`](../../docs/how-to-solve.md).
 
 | # | Задача | Что тренируем |
 |---|---|---|

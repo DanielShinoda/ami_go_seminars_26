@@ -60,17 +60,26 @@ go env GOROOT GOPATH GOMODCACHE
 ```bash
 git clone git@github.com:DanielShinoda/ami_go_seminars_26.git
 cd ami_go_seminars_26
-go test ./seminar-01-intro/examples/05-first-test
+make doctor
 ```
 
-Последняя команда должна напечатать `ok ...`. Если да — окружение готово.
+`make doctor` печатает версию Go и прогоняет тестовый пример. Если в конце
+написано «Окружение готово» — всё настроено.
+
+Если `make` у вас нет (обычно это Windows без установленного make), та же
+проверка напрямую:
+
+```bash
+go version
+go test ./seminar-01-intro/examples/05-first-test
+```
 
 ## Проверочный список
 
 - [ ] `go version` печатает версию
 - [ ] Редактор подсвечивает ошибки в `.go`-файлах
 - [ ] Файл переформатируется при сохранении
-- [ ] `go test ./seminar-01-intro/examples/05-first-test` печатает `ok`
+- [ ] `make doctor` печатает «Окружение готово»
 
 ## Если что-то не работает
 

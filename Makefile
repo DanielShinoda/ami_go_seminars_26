@@ -1,27 +1,47 @@
-.PHONY: help test test-01 test-02 fmt fmt-fix vet check solutions
+# Команды для работы с материалами курса. `make help` — список.
+#
+# Коротко:
+#   make doctor  — «у меня всё установлено?»
+#   make test    — «мои задачи решены?»   (нерешённые падают — это норма)
+#   make check   — «я ничего не сломал?»  (должно быть зелёным всегда)
+#
+# Список семинаров нигде не записан: новая папка seminar-NN-тема
+# подхватывается сама, править этот файл не нужно.
+
+.DEFAULT_GOAL := help
+.PHONY: help doctor test fmt lint check
+
+SEMINARS := $(sort $(wildcard seminar-*))
+EXAMPLES := $(patsubst %,./%/examples/...,$(SEMINARS))
+TASKS    := $(patsubst %,./%/tasks/...,$(SEMINARS))
 
 help: ## Показать список команд
-	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z0-9_%-]+:.*?## .*$$' $(MAKEFILE_LIST) \
+		| awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-9s\033[0m %s\n", $$1, $$2}'
 
-test: ## Прогнать все тесты (нерешённые задачи падают — это норма)
-	go test ./...
+doctor: ## Проверить, что окружение настроено
+	@go version
+	@go test $(EXAMPLES) > /dev/null && echo "Окружение готово."
 
-test-01: ## Тесты задач семинара 1
-	go test ./seminar-01-intro/tasks/...
+test: ## Тесты всех задач (нерешённые падают — это норма)
+	go test $(TASKS)
 
-test-02: ## Тесты задач семинара 2
-	go test ./seminar-02-basics/tasks/...
+test-%: ## Тесты задач одного семинара: make test-01
+	@d=$$(ls -d seminar-$*-* 2>/dev/null | head -1); \
+		test -n "$$d" || { echo "Нет семинара с номером $*"; exit 1; }; \
+		go test ./$$d/tasks/...
 
-fmt: ## Показать неотформатированные файлы
-	@gofmt -l .
+task: ## Одна задача подробно: make task T=seminar-02-basics/tasks/task02-reverse
+	@test -n "$(T)" || { echo "Укажите задачу: make task T=<путь>"; exit 1; }
+	go test -v ./$(T)
 
-fmt-fix: ## Отформатировать все файлы
+fmt: ## Отформатировать код
 	gofmt -w .
 
-vet: ## Статический анализ
+lint: ## Форматирование и go vet — перед сдачей должно быть пусто
+	@out=$$(gofmt -l .); test -z "$$out" || { echo "Не отформатировано:"; echo "$$out"; exit 1; }
 	go vet ./...
 
-check: fmt vet test ## Форматирование + анализ + тесты
-
-solutions: ## Проверить эталонные решения преподавателя (папка solutions/)
-	./scripts/check_solutions.sh
+check: lint ## Материалы целы: форматирование, vet, примеры компилируются и проходят тесты
+	go build ./...
+	go test $(EXAMPLES)
