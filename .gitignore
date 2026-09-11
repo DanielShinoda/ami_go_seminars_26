@@ -30,3 +30,6 @@ go.work.sum
 # Editor/IDE
 # .idea/
 # .vscode/
+
+# Эталонные решения преподавателя — не публикуем студентам
+/solutions/
