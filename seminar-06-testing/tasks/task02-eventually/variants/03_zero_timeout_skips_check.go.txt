@@ -1,0 +1,24 @@
+// В этой реализации при timeout <= 0 cond не вызывается вообще и
+// всегда возвращается false — даже если cond истинна сразу. Тесты должны
+// её отклонить (например, посчитав вызовы cond).
+
+package eventually
+
+import "time"
+
+func Eventually(cond func() bool, timeout time.Duration) bool {
+	if timeout <= 0 {
+		return false // ← cond проверена ноль раз
+	}
+	const poll = 5 * time.Millisecond
+	deadline := time.Now().Add(timeout)
+	for {
+		if cond() {
+			return true
+		}
+		if !time.Now().Before(deadline) {
+			return false
+		}
+		time.Sleep(poll)
+	}
+}

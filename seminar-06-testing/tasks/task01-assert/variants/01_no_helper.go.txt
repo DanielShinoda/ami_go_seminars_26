@@ -1,0 +1,27 @@
+// В этой реализации хелперы НЕ вызывают t.Helper(): упавший тест будет
+// указывать на строку внутри хелпера, а не на строку его вызова, и
+// разбирать такой отчёт больно. Тесты должны её отклонить.
+
+package assert
+
+import (
+	"reflect"
+)
+
+func Equal(t TestingT, got, want any) {
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("получили %v, ожидалось %v", got, want)
+	}
+}
+
+func True(t TestingT, cond bool) {
+	if !cond {
+		t.Errorf("условие ложно, ожидалось true")
+	}
+}
+
+func NoError(t TestingT, err error) {
+	if err != nil {
+		t.Errorf("неожиданная ошибка: %v", err)
+	}
+}

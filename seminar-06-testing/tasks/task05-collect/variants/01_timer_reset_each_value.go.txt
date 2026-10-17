@@ -1,0 +1,22 @@
+// В этой реализации таймер создаётся заново на каждое полученное
+// значение: у непрерывно пишущего канала таймаут бесконечно
+// откладывается, и Collect не возвращается никогда. Тесты должны её
+// отклонить — потоковым каналом и границей на время возврата.
+
+package collect
+
+import "time"
+
+func Collect(ch <-chan int, timeout time.Duration) (vals []int, closed bool) {
+	for {
+		select {
+		case v, ok := <-ch:
+			if !ok {
+				return vals, true
+			}
+			vals = append(vals, v)
+		case <-time.After(timeout): // ← таймер пересоздаётся каждую итерацию
+			return vals, false
+		}
+	}
+}

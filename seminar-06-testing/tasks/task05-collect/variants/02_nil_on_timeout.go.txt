@@ -1,0 +1,23 @@
+// В этой реализации при таймауте возвращается nil вместо уже прочитанных
+// значений: частичный результат теряется. Тесты должны её отклонить.
+
+package collect
+
+import "time"
+
+func Collect(ch <-chan int, timeout time.Duration) (vals []int, closed bool) {
+	deadline := time.NewTimer(timeout)
+	defer deadline.Stop()
+
+	for {
+		select {
+		case v, ok := <-ch:
+			if !ok {
+				return vals, true
+			}
+			vals = append(vals, v)
+		case <-deadline.C:
+			return nil, false // ← прочитанное теряется
+		}
+	}
+}

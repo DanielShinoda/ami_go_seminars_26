@@ -1,0 +1,28 @@
+// В этой реализации Equal сравнивает значения через строковое
+// представление: nil-слайс и пустой слайс «равны» ([] == []), число 42
+// «равно» строке "42". Тесты должны её отклонить.
+
+package assert
+
+import "fmt"
+
+func Equal(t TestingT, got, want any) {
+	t.Helper()
+	if fmt.Sprint(got) != fmt.Sprint(want) {
+		t.Errorf("получили %v, ожидалось %v", got, want)
+	}
+}
+
+func True(t TestingT, cond bool) {
+	t.Helper()
+	if !cond {
+		t.Errorf("условие ложно, ожидалось true")
+	}
+}
+
+func NoError(t TestingT, err error) {
+	t.Helper()
+	if err != nil {
+		t.Errorf("неожиданная ошибка: %v", err)
+	}
+}

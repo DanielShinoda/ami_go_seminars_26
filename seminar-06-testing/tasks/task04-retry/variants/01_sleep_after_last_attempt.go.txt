@@ -1,0 +1,24 @@
+// В этой реализации Sleep вызывается и после ПОСЛЕДНЕЙ неудачной
+// попытки: пауза перед сдачей ни к чему, а число пауз на одно больше
+// ожидаемого. Тесты должны её отклонить (посчитав вызовы Sleep).
+
+package retry
+
+import "time"
+
+func Do(op func() error, opts Options) error {
+	if opts.Attempts < 1 {
+		opts.Attempts = 1
+	}
+
+	var err error
+	for i := 1; i <= opts.Attempts; i++ {
+		if err = op(); err == nil {
+			return nil
+		}
+		if opts.Sleep != nil {
+			opts.Sleep(time.Duration(i) * 10 * time.Millisecond)
+		}
+	}
+	return err
+}

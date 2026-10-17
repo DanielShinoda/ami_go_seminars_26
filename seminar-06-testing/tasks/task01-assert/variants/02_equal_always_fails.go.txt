@@ -1,0 +1,26 @@
+// В этой реализации Equal вызывает t.Errorf всегда, даже когда значения
+// совпадают: любой тест с Equal «падает», хотя код правильный.
+// Тесты должны её отклонить.
+
+package assert
+
+import "reflect"
+
+func Equal(t TestingT, got, want any) {
+	t.Helper()
+	t.Errorf("получили %v, ожидалось %v", got, want)
+}
+
+func True(t TestingT, cond bool) {
+	t.Helper()
+	if !cond {
+		t.Errorf("условие ложно, ожидалось true")
+	}
+}
+
+func NoError(t TestingT, err error) {
+	t.Helper()
+	if err != nil {
+		t.Errorf("неожиданная ошибка: %v", err)
+	}
+}

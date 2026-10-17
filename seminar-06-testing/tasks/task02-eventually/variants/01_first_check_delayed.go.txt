@@ -1,0 +1,22 @@
+// В этой реализации первый опрос происходит только после паузы: даже
+// cond, истинная с самого начала, заставляет ждать. Тесты должны её
+// отклонить.
+
+package eventually
+
+import "time"
+
+func Eventually(cond func() bool, timeout time.Duration) bool {
+	const poll = 250 * time.Millisecond // пауза намеренно большая
+	deadline := time.Now().Add(timeout)
+	time.Sleep(poll) // ← лишний сон ДО первой проверки cond
+	for {
+		if cond() {
+			return true
+		}
+		if !time.Now().Before(deadline) {
+			return false
+		}
+		time.Sleep(poll)
+	}
+}

@@ -1,0 +1,23 @@
+// В этой реализации после исчерпания попыток возвращается nil, а не
+// ошибка последней попытки: вызывающий код не узнает, что операция
+// провалилась. Тесты должны её отклонить.
+
+package retry
+
+import "time"
+
+func Do(op func() error, opts Options) error {
+	if opts.Attempts < 1 {
+		opts.Attempts = 1
+	}
+
+	for i := 1; i <= opts.Attempts; i++ {
+		if err := op(); err == nil {
+			return nil
+		}
+		if i < opts.Attempts && opts.Sleep != nil {
+			opts.Sleep(time.Duration(i) * 10 * time.Millisecond)
+		}
+	}
+	return nil // ← вместо ошибки последней попытки
+}

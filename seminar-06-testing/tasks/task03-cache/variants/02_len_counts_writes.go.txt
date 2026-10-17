@@ -1,0 +1,37 @@
+// В этой реализации Len считает вызовы Set, а не различные ключи:
+// повторная запись по тому же ключу раздувает «размер» кеша.
+// Тесты должны её отклонить.
+
+package cache
+
+import "sync"
+
+type Cache struct {
+	mu    sync.RWMutex
+	items map[string]string
+	sets  int // ← счётчик записей вместо размера
+}
+
+func New() *Cache {
+	return &Cache{items: make(map[string]string)}
+}
+
+func (c *Cache) Get(key string) (string, bool) {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	v, ok := c.items[key]
+	return v, ok
+}
+
+func (c *Cache) Set(key, value string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.items[key] = value
+	c.sets++
+}
+
+func (c *Cache) Len() int {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	return c.sets
+}

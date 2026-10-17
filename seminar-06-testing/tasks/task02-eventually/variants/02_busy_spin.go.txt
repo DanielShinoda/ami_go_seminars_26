@@ -1,0 +1,17 @@
+// В этой реализации между опросами нет паузы: цикл крутит cond подряд,
+// сжигая ядро процессора всё время ожидания. Тесты должны её отклонить
+// (например, посчитав вызовы cond за известный интервал).
+
+package eventually
+
+import "time"
+
+func Eventually(cond func() bool, timeout time.Duration) bool {
+	deadline := time.Now().Add(timeout)
+	for !cond() {
+		if !time.Now().Before(deadline) {
+			return false
+		}
+	}
+	return true
+}

@@ -1,0 +1,24 @@
+// В этой реализации пауза после каждой неудачной попытки одинаковая —
+// 10 мс: линейный рост (10, 20, 30...) потерян. Тесты должны её
+// отклонить (сверив график пауз).
+
+package retry
+
+import "time"
+
+func Do(op func() error, opts Options) error {
+	if opts.Attempts < 1 {
+		opts.Attempts = 1
+	}
+
+	var err error
+	for i := 1; i <= opts.Attempts; i++ {
+		if err = op(); err == nil {
+			return nil
+		}
+		if i < opts.Attempts && opts.Sleep != nil {
+			opts.Sleep(10 * time.Millisecond) // ← всегда 10 мс
+		}
+	}
+	return err
+}

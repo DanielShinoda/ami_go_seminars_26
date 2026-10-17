@@ -1,0 +1,22 @@
+// В этой реализации закрытие канала не проверяется: закрытый канал
+// отдаёт нулевые значения бесконечно, и Collect копит их до таймаута
+// вместо немедленного выхода с closed == true. Тесты должны её
+// отклонить.
+
+package collect
+
+import "time"
+
+func Collect(ch <-chan int, timeout time.Duration) (vals []int, closed bool) {
+	deadline := time.NewTimer(timeout)
+	defer deadline.Stop()
+
+	for {
+		select {
+		case v := <-ch: // ← флаг закрытия (ok) не проверяется
+			vals = append(vals, v)
+		case <-deadline.C:
+			return vals, false
+		}
+	}
+}
